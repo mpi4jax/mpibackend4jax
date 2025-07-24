@@ -1,5 +1,5 @@
 """
-mpitrampoline4jax - MPITrampoline integration for JAX
+mpibackend4jax - MPI backend integration for JAX
 
 This package automatically configures MPITrampoline for use with JAX
 by setting the required environment variables when imported.
@@ -22,8 +22,8 @@ if _mpiwrapper_lib.exists():
     os.environ["MPITRAMPOLINE_LIB"] = str(_mpiwrapper_lib.absolute())
     os.environ["JAX_CPU_COLLECTIVES_IMPLEMENTATION"] = "mpi"
 
-    print(f"mpitrampoline4jax: Set MPITRAMPOLINE_LIB={_mpiwrapper_lib.absolute()}")
-    print("mpitrampoline4jax: Set JAX_CPU_COLLECTIVES_IMPLEMENTATION=mpi")
+    print(f"mpibackend4jax: Set MPITRAMPOLINE_LIB={_mpiwrapper_lib.absolute()}")
+    print("mpibackend4jax: Set JAX_CPU_COLLECTIVES_IMPLEMENTATION=mpi")
 else:
     print(f"Warning: MPIWrapper library not found at {_mpiwrapper_lib}")
     print("Please ensure the package was installed correctly.")

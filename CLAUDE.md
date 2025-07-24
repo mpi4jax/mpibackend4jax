@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is `mpitrampoline4jax`, a Python package that automatically configures MPITrampoline for JAX distributed computing. The package builds and bundles a C++ MPIWrapper library and sets the required environment variables when imported.
+This is `mpibackend4jax`, a Python package that automatically configures MPITrampoline for JAX distributed computing. The package builds and bundles a C++ MPIWrapper library and sets the required environment variables when imported.
 
 ## Development Commands
 
@@ -28,10 +28,10 @@ uv run isort .
 
 ### Core Components
 
-1. **Main Package (`src/mpitrampoline4jax/__init__.py`)**
+1. **Main Package (`src/mpibackend4jax/__init__.py`)**
    - Automatically sets `MPITRAMPOLINE_LIB` and `JAX_CPU_COLLECTIVES_IMPLEMENTATION=mpi` environment variables on import
    - Provides `is_configured()` and `get_library_path()` utility functions
-   - Located at `src/mpitrampoline4jax/__init__.py:19-21`
+   - Located at `src/mpibackend4jax/__init__.py:19-21`
 
 2. **MPIWrapper Submodule (`src/MPIwrapper/`)**
    - C++ implementation that acts as an MPI trampoline/wrapper
@@ -41,14 +41,14 @@ uv run isort .
 3. **Custom Build System**
    - `setup.py` contains `BuildMPIWrapper` class that extends `build_ext`
    - Automatically patches CMakeLists.txt on macOS to disable two-level namespace checks
-   - Builds library directly into package structure at `src/mpitrampoline4jax/lib/`
+   - Builds library directly into package structure at `src/mpibackend4jax/lib/`
 
 ### Build Process
 
 The build system performs these steps:
 1. Creates build directory in `src/MPIwrapper/build/`
 2. On macOS, patches CMakeLists.txt to comment out `check_twolevel.sh` validation
-3. Runs CMake with output directory set to `src/mpitrampoline4jax/lib/`
+3. Runs CMake with output directory set to `src/mpibackend4jax/lib/`
 4. Compiles the MPIWrapper C++ code to produce `libmpiwrapper.so`
 5. Copies library to build directories for wheel packaging
 
@@ -56,7 +56,7 @@ The build system performs these steps:
 
 Users import the package before using JAX with MPI:
 ```python
-import mpitrampoline4jax  # Sets environment variables
+import mpibackend4jax  # Sets environment variables
 import jax
 jax.distributed.initialize()
 ```

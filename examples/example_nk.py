@@ -1,4 +1,4 @@
-import mpitrampoline4jax as _mpi4jax  # noqa: F401
+import mpibackend4jax as _mpi4jax  # noqa: F401
 import jax
 
 print("Setup initialize", flush=True)

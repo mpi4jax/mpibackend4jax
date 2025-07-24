@@ -1,4 +1,4 @@
-# mpitrampoline4jax
+# mpibackend4jax
 
 > [!WARNING]
 > This is an early experimental package. Feedback wanted!
@@ -9,10 +9,10 @@ A Python package to provide an easy to use MPI-backend for JAX sharding, built o
 
 ```bash
 # Using uv (recommended)
-uv add git+https://github.com/mpi4jax/mpitrampoline4jax
+uv add git+https://github.com/mpi4jax/mpibackend4jax
 
 # Using pip
-pip install git+https://github.com/mpi4jax/mpitrampoline4jax
+pip install git+https://github.com/mpi4jax/mpibackend4jax
 ```
 
 ## Usage
@@ -20,7 +20,7 @@ pip install git+https://github.com/mpi4jax/mpitrampoline4jax
 Simply import the package before using JAX with MPI:
 
 ```python
-import mpitrampoline4jax as _mpi4jax  # noqa: F401
+import mpibackend4jax as _mpi4jax  # noqa: F401
 import jax
 
 print("Setup initialize", flush=True)
@@ -46,7 +46,7 @@ mpirun -np 2 python examples/example.py
 
 ## What it does
 
-When you import `mpitrampoline4jax`, it automatically:
+When you import `mpibackend4jax`, it automatically:
 
 1. Sets `MPITRAMPOLINE_LIB` to point to the built `libmpiwrapper.so`
 2. Sets `JAX_CPU_COLLECTIVES_IMPLEMENTATION=mpi`
@@ -64,9 +64,9 @@ Tested on macOS with MPICH.
 You can check if MPITrampoline is properly configured:
 
 ```python
-import mpitrampoline4jax
+import mpibackend4jax
 
-if mpitrampoline4jax.is_configured():
+if mpibackend4jax.is_configured():
     print("MPITrampoline is properly configured!")
 else:
     print("MPITrampoline configuration failed.")
