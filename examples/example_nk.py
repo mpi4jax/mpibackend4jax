@@ -1,3 +1,11 @@
+import mpitrampoline4jax as _mpi4jax  # noqa: F401
+import jax
+
+print("Setup initialize", flush=True)
+jax.distributed.initialize()
+print(f"{jax.process_index()}/{jax.process_count()} :", jax.local_devices())
+print(f"{jax.process_index()}/{jax.process_count()} :", jax.devices())
+
 
 import netket as nk
 from netket import experimental as nkx
@@ -18,6 +26,7 @@ ma = nk.models.RBM(alpha=1, param_dtype=float)
 
 # Metropolis Local Sampling
 sa = nk.sampler.MetropolisLocal(hi, n_chains=16)
+print(sa.n_chains, sa.n_chains_per_rank)
 
 # Optimizer with a decreasing learning rate
 op = nk.optimizer.Sgd(learning_rate=optax.linear_schedule(0.1, 0.0001, 500))
