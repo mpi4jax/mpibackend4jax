@@ -12,8 +12,7 @@ description = "MPITrampoline integration for JAX"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "jax>=0.7",
-    "netket>=3.18",
+    "jax>=0.6.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -31,10 +30,8 @@ dependencies = ["cmake"]
 dev = [
     "ruff==0.12.5",
     "pre-commit",
+    "netket @ git+https://github.com/netket/netket.git@pv/jax-0.7-easy",
 ]
-
-[tool.uv.sources]
-netket = { path = "../netket", editable = true }
 
 [tool.ruff]
 exclude = ["src/MPIwrapper"]
