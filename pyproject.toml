@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "cmake"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "cmake"]
+build-backend = "hatchling.build"
 
 [project]
 name = "mpitrampoline4jax"
@@ -15,8 +15,12 @@ dependencies = [
     "jax>=0.4",
 ]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/mpitrampoline4jax"]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
+dependencies = ["cmake"]
 
 [project.optional-dependencies]
 dev = [
