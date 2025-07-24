@@ -1,0 +1,3 @@
+[submodule "src/MPIwrapper"]
+	path = src/MPIwrapper
+	url = https://github.com/eschnett/MPIwrapper.git
