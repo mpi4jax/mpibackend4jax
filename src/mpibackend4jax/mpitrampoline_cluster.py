@@ -15,10 +15,12 @@
 from __future__ import annotations
 
 import os
+import socket
 from jax._src import clusters
 
 _PMI_SIZE = "PMI_SIZE"
 _PMI_RANK = "PMI_RANK"
+_MPITRAMPOLINE_ID = "MPITRAMPOLINE_ID"
 
 
 class MPITrampolineLocalCluster(clusters.ClusterEnv):
@@ -30,7 +32,41 @@ class MPITrampolineLocalCluster(clusters.ClusterEnv):
 
     @classmethod
     def get_coordinator_address(cls, timeout_secs: int | None) -> str:
-        return "127.0.0.1:50000"
+        # Try to get a more robust coordinator address
+        # First, check if MPITRAMPOLINE_ID is available for port generation
+        if _MPITRAMPOLINE_ID in os.environ:
+            # Use MPITRAMPOLINE_ID to generate a deterministic port
+            job_id = int(os.environ[_MPITRAMPOLINE_ID])
+            port = 40000 + (job_id % (2**12))  # Port in range 40000-44095
+        else:
+            # Fallback to a fixed port if no job ID available
+            port = 50000
+
+        # Try to determine the coordinator host
+        # Check common MPI environment variables for hostname
+        hostname = "127.0.0.1"  # Default fallback
+
+        # Try various MPI environment variables that might contain hostname info
+        for env_var in [
+            "HYDRA_HOST_FILE",
+            "MPI_LOCALNRANKS",
+            "OMPI_MCA_orte_local_daemon_uri",
+        ]:
+            if env_var in os.environ:
+                # For now, use localhost as we can't easily parse these
+                # In a real deployment, rank 0 would typically be the coordinator
+                break
+
+        # If we're rank 0, we're likely the coordinator, so use actual hostname
+        if os.environ.get(_PMI_RANK, "0") == "0":
+            try:
+                hostname = socket.gethostname()
+                # Try to resolve to IP address for better reliability
+                hostname = socket.gethostbyname(hostname)
+            except (socket.gaierror, OSError):
+                hostname = "127.0.0.1"  # Fallback on error
+
+        return f"{hostname}:{port}"
 
     @classmethod
     def get_process_count(cls) -> int:
