@@ -27,14 +27,14 @@ dependencies = ["cmake"]
 path = "hatch_build.py"
 dependencies = ["cmake"]
 
-[tool.uv.sources]
-netket = { path = "../../../Nextcloud/Codes/Python/netket", editable = true }
-
 [dependency-groups]
 dev = [
-    "ruff>=0.12.5",
+    "ruff==0.12.5",
     "pre-commit",
 ]
+
+[tool.uv.sources]
+netket = { path = "../netket", editable = true }
 
 [tool.ruff]
 exclude = ["src/MPIwrapper"]

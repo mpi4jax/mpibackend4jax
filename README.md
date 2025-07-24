@@ -1,11 +1,18 @@
 # mpitrampoline4jax
 
-A Python package that provides MPITrampoline integration for JAX, automatically building MPIWrapper and setting required environment variables.
+> [!WARNING]
+> This is an early experimental package. Feedback wanted!
+
+A Python package to provide an easy to use MPI-backend for JAX sharding, built on top of MPIWrapper. No special operations, 100% native JAX.
 
 ## Installation
 
 ```bash
-pip install .
+# Using uv (recommended)
+uv add git+https://github.com/mpi4jax/mpitrampoline4jax
+
+# Using pip
+pip install git+https://github.com/mpi4jax/mpitrampoline4jax
 ```
 
 ## Usage
@@ -13,19 +20,28 @@ pip install .
 Simply import the package before using JAX with MPI:
 
 ```python
-import mpitrampoline4jax
+import mpitrampoline4jax as _mpi4jax  # noqa: F401
 import jax
 
-# Initialize JAX distributed
+print("Setup initialize", flush=True)
 jax.distributed.initialize()
+print(f"{jax.process_index()}/{jax.process_count()} :", jax.local_devices())
+print(f"{jax.process_index()}/{jax.process_count()} :", jax.devices())
 
-# Your JAX code here
+x = jax.numpy.ones(
+    (jax.device_count(),),
+    device=jax.sharding.NamedSharding(
+        jax.sharding.Mesh(jax.devices(), "i"), jax.sharding.PartitionSpec("i")
+    ),
+)
+
+print(f"{jax.process_index()}/{jax.process_count()} :", x.sum())
 ```
 
-Or run directly:
+Run with MPI:
 
 ```bash
-mpirun -np 2 python -c 'import mpitrampoline4jax; import jax; jax.distributed.initialize()'
+mpirun -np 2 python examples/example.py
 ```
 
 ## What it does
@@ -41,6 +57,8 @@ When you import `mpitrampoline4jax`, it automatically:
 - A working MPI implementation (e.g., OpenMPI, MPICH)
 - JAX
 
+Tested on macOS with MPICH.
+
 ## Verification
 
 You can check if MPITrampoline is properly configured:
@@ -53,3 +71,7 @@ if mpitrampoline4jax.is_configured():
 else:
     print("MPITrampoline configuration failed.")
 ```
+
+## Acknowledgments
+
+Special thanks to @inailuig (Clemens Giuliani) for adding MPI support in XLA, which makes this integration possible.
