@@ -19,10 +19,11 @@ class CustomBuildHook(BuildHookInterface):
             
         self._build_mpiwrapper()
         
-        # Ensure the lib directory is included in the wheel
-        if "force_include" not in build_data:
-            build_data["force_include"] = {}
-        build_data["force_include"]["src/mpitrampoline4jax/lib"] = "mpitrampoline4jax/lib"
+        # For wheel builds, ensure the lib directory is included
+        if self.target_name == "wheel":
+            if "force_include" not in build_data:
+                build_data["force_include"] = {}
+            build_data["force_include"]["src/mpitrampoline4jax/lib"] = "mpitrampoline4jax/lib"
     
     def _build_mpiwrapper(self) -> None:
         """Build MPIWrapper using CMake."""
