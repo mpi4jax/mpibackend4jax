@@ -45,4 +45,4 @@ def initialize():
 #     return os.environ.get("MPITRAMPOLINE_LIB")
 
 
-__all__ = ["is_configured", "get_library_path"]#, "MPITrampolineLocalCluster"]
+#__all__ = ["is_configured", "get_library_path"], "MPITrampolineLocalCluster"]
