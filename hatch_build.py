@@ -1,5 +1,6 @@
 """Hatch build hook for compiling MPIWrapper with CMake."""
 
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -35,9 +36,9 @@ class CustomBuildHook(BuildHookInterface):
         # Create lib directory
         package_lib_dir.mkdir(exist_ok=True)
 
-        # Create build directory
+        # Create build directory, cleaning if necessary
         build_dir = mpiwrapper_dir / "build"
-        build_dir.mkdir(exist_ok=True)
+        self._ensure_clean_build_dir(build_dir, mpiwrapper_dir)
 
         # Handle macOS CMakeLists.txt patching
         self._patch_cmake_on_macos(mpiwrapper_dir)
@@ -92,3 +93,28 @@ class CustomBuildHook(BuildHookInterface):
 
         with open(cmake_file, "w") as f:
             f.write(content)
+
+    def _ensure_clean_build_dir(self, build_dir: Path, mpiwrapper_dir: Path) -> None:
+        """Ensure build directory is clean and doesn't have stale CMake cache."""
+        cmake_cache = build_dir / "CMakeCache.txt"
+
+        # If build directory exists and has a CMakeCache.txt, check if it's stale
+        if build_dir.exists() and cmake_cache.exists():
+            try:
+                with open(cmake_cache, "r") as f:
+                    cache_content = f.read()
+
+                # Check if the cache references the current source directory
+                current_source = str(mpiwrapper_dir.absolute())
+                if current_source not in cache_content:
+                    print(f"Detected stale CMake cache in {build_dir}, cleaning...")
+                    shutil.rmtree(build_dir)
+
+            except Exception as e:
+                print(
+                    f"Warning: Could not read CMake cache, cleaning build directory: {e}"
+                )
+                shutil.rmtree(build_dir)
+
+        # Create build directory
+        build_dir.mkdir(exist_ok=True)
