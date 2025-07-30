@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.entry-points.jax_plugins]
-mpibackend4jax = "mpibackend4jax"
+mpibackend4jax = "mpibackend4jax.plugin"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mpibackend4jax"]
